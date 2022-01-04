@@ -8,7 +8,7 @@ const pixelmatch = require('pixelmatch')
 const PNG = require('pngjs').PNG;
 
 
-export class Datasets extends BasePage {
+export class Rules extends BasePage {
 
     async login(username, password) {
         await page.goto(env)
@@ -64,13 +64,13 @@ export class Datasets extends BasePage {
             fs.writeFileSync('../ui-automation/screenshots/2_HomePage_diff.png', PNG.sync.write(diff))
         }
 
-        page.reload()
+        //page.reload()
         await page.waitForTimeout(10000)
         await page.waitForSelector('#cxm-link')
         await page.click('#cxm-link')
-        
+
         await page.waitForTimeout(10000)
-         if (takeScreenshots == 'true') {
+        if (takeScreenshots == 'true') {
             await page.screenshot({ path: 'screenshots/3_CXM.png', fullPage: true })
         }
         const img3 = PNG.sync.read(fs.readFileSync('../ui-automation/screenshots/3_CXM.png'))
@@ -80,35 +80,36 @@ export class Datasets extends BasePage {
             pixelmatch(img3.data, img4.data, diff2.data, img3.width, img3.height, { threshold: 0.1 })
             fs.writeFileSync('../ui-automation/screenshots/3_CXM_diff.png', PNG.sync.write(diff2))
         }
-        
+
         await page.waitForTimeout(15000)
 
         page.goto('https://app.sit1.vcilabs.com/cxm/rules')
-        
-        
+
+
         await page.waitForTimeout(12000)
-        
+
         await page.screenshot({ path: 'screenshots/4_CXMRules.png', fullPage: true })
         await page.waitForTimeout(10000)
 
-          
+
     }
 
     async createNewRule() {
-       
+
 
         await page.waitForTimeout(2000)
-        const [newRule] = await page.$x("//div[contains(text(),'New Rule')]")       
+        const [newRule] = await page.$x("//div[contains(text(),'New Rule')]")
         await newRule.click()
-        await page.waitForTimeout(2000)
-        
-       
-       // await insert(page, '[placeholder="#Enter a name for this rule"]', "auto-test")
+        await page.waitForTimeout(10000)
+
+        const [ruleName] = await page.$x("//input[@placeholder='Enter a name for this rule']")
+        await ruleName.type("auto-test")
+        await page.waitForTimeout(5000)
         const [createCondition] = await page.$x("//div[contains(text(),'Condition')]")
-        await createCondition.click()   
+        await createCondition.click()
         await page.screenshot({ path: 'screenshots/5_CXMNewRule.png', fullPage: true })
         await page.waitForTimeout(20000)
-        await page.click('[id="Data Source"]')     
+        await page.click('[id="Data Source"]')
         await page.waitForTimeout(10000)
         await insert(page, '[id="Data Source"]', "Sparq Survey")
         await page.keyboard.press('ArrowDown')
@@ -118,9 +119,9 @@ export class Datasets extends BasePage {
         await insert(page, '[id="Survey Name"]', "test-rec-1")
         await page.waitForTimeout(2000)
         await page.keyboard.press('ArrowDown')
-        
+
         await page.keyboard.press('Enter')
-        
+
         await page.waitForTimeout(5000)
         await page.click('[id="Question"]')
         await page.waitForTimeout(10000)
@@ -135,17 +136,16 @@ export class Datasets extends BasePage {
 
         await page.waitForSelector('#Answer-option-0')
         await page.click('#Answer-option-0')
-        const [createAction] = await page.$x("//div[contains(text(),'Action')]")
+        const [createAction] = await page.$x("//div[contains(text(),'Create An Action')]")
         createAction.click()
-        await page.waitForTimeout(2000)
-        await page.waitForSelector('body')
-        await page.click('body')
-        
-        await insert(page, 'body', "Create Slack Message")
-        await page.keyboard.press('ArrowDown')
-        await page.keyboard.press('Enter')
         await page.waitForTimeout(5000)
-        
+        const [actionDropDown] = await page.$x("(//div[@aria-haspopup='listbox'])[2]")
+        actionDropDown.click()
+        await page.waitForTimeout(5000)
+        const [createSlackMessage] = await page.$x("//span[contains(text(),'Create Slack Message')]")
+        await createSlackMessage.click()
+        await page.waitForTimeout(5000)
+
 
         await page.screenshot({ path: 'screenshots/6_CXMNewRuleSurvey.png', fullPage: true })
 
