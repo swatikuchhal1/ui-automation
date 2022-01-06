@@ -27,7 +27,7 @@ describe('Datasets Regression Testing Suite', () => {
 
     it('Test 2 : Go To CXM Page', async () => {
         await rules.gotoCXMPage()
-
+        
     })
 
     it('Test 3 : Create new rule', async () => {
